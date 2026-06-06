@@ -1168,7 +1168,7 @@ SpecWatch must:
 
 ## Sprint 0 — Repository Bootstrap
 
-Status: Not Started
+Status: Completed
 
 Goals:
 
@@ -1252,3 +1252,36 @@ Each implementation session must append a new entry here, per [Section 5.2](#52-
 - **Remaining / incomplete:** No source code, solution, or projects exist yet. Sprint 0
   (Repository Bootstrap) has not been started.
 - **Suggested next sprint:** Sprint 0 — Repository Bootstrap.
+
+## Session 2 — 2026-06-06 — Sprint 0: Repository Bootstrap
+
+- **Sprint:** Sprint 0 — Repository Bootstrap (Completed).
+- **Implemented:** Created the `SpecWatch.sln` solution and the five projects from
+  the recommended repository structure (Section 6): `src/SpecWatch.Core`,
+  `src/SpecWatch.Cli` (executable assembly name `specwatch`),
+  `src/SpecWatch.AzureDevOps`, `tests/SpecWatch.Core.Tests`, and
+  `tests/SpecWatch.Cli.Tests`. All projects target `net9.0` with nullable
+  reference types and implicit usings enabled. Wired up project references
+  (Cli → Core, AzureDevOps → Core, test projects → their targets) and exposed
+  CLI internals to its test project via `InternalsVisibleTo`. Added a minimal CLI
+  entry point that prints the version (`--version`) and a command summary.
+  Added `README.md`, `LICENSE` (MIT), and a .NET `.gitignore`.
+- **Files changed:** `SpecWatch.sln` (new), `.gitignore` (new), `LICENSE` (new),
+  `README.md` (updated), `src/SpecWatch.Core/SpecWatch.Core.csproj` (new),
+  `src/SpecWatch.Core/AssemblyMarker.cs` (new),
+  `src/SpecWatch.Cli/SpecWatch.Cli.csproj` (new),
+  `src/SpecWatch.Cli/Program.cs` (new),
+  `src/SpecWatch.AzureDevOps/SpecWatch.AzureDevOps.csproj` (new),
+  `src/SpecWatch.AzureDevOps/AssemblyMarker.cs` (new),
+  `tests/SpecWatch.Core.Tests/SpecWatch.Core.Tests.csproj` (new),
+  `tests/SpecWatch.Core.Tests/BootstrapTests.cs` (new),
+  `tests/SpecWatch.Cli.Tests/SpecWatch.Cli.Tests.csproj` (new),
+  `tests/SpecWatch.Cli.Tests/BootstrapTests.cs` (new).
+- **Tests added:** Bootstrap tests in both test projects confirming the solution
+  builds and the test harness runs (`dotnet test` passes: 2 tests, 0 failures).
+- **Build/test commands:** `dotnet build SpecWatch.sln` and
+  `dotnet test SpecWatch.sln` both succeed on the .NET 9 / .NET 10 SDK.
+- **Remaining / incomplete:** No manifest parsing, sources, change detection,
+  generation, reporting, or Azure DevOps logic yet — these begin in Sprint 1.
+  The CLI currently only handles `--version` and a help summary.
+- **Suggested next sprint:** Sprint 1 — Manifest Parsing and Validation.
