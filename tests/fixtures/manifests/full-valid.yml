@@ -1,0 +1,78 @@
+version: 1
+
+settings:
+  changeDetection:
+    mode: hash
+
+  pullRequest:
+    mode: single
+    branchPrefix: chore/specwatch
+    title: "chore: update generated OpenAPI clients"
+    labels:
+      - dependencies
+      - openapi
+      - generated-client
+
+  validation:
+    failOnValidationError: true
+
+apis:
+  - name: payments
+    enabled: true
+
+    source:
+      type: url
+      url: https://payments.example.com/openapi.json
+      auth:
+        type: bearer
+        tokenVariable: PAYMENTS_OPENAPI_TOKEN
+
+    snapshot:
+      path: openapi/payments.openapi.json
+
+    client:
+      language: csharp
+      generator: kiota
+      output: src/Clients/Payments
+      namespace: Contoso.Clients.Payments
+      className: PaymentsClient
+      cleanOutput: true
+      additionalArguments:
+        - "--structured-mime-types"
+        - "application/json"
+
+    runtimeAuth:
+      type: oauth2-client-credentials
+      tokenUrl: https://login.example.com/oauth2/token
+      clientIdVariable: PAYMENTS_CLIENT_ID
+      clientSecretVariable: PAYMENTS_CLIENT_SECRET
+      scopes:
+        - payments.read
+        - payments.write
+
+    validation:
+      commands:
+        - dotnet build
+        - dotnet test
+
+  - name: inventory
+    enabled: true
+
+    source:
+      type: file
+      path: external-specs/inventory.openapi.json
+
+    snapshot:
+      path: openapi/inventory.openapi.json
+
+    client:
+      language: csharp
+      generator: nswag
+      output: src/Clients/Inventory/InventoryClient.cs
+      namespace: Contoso.Clients.Inventory
+      cleanOutput: false
+
+    runtimeAuth:
+      type: api-key-header
+      headerName: X-API-Key
+      valueVariable: INVENTORY_API_KEY

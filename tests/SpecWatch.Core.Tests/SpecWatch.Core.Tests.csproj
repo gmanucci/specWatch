@@ -22,4 +22,10 @@
     <ProjectReference Include="..\..\src\SpecWatch.Core\SpecWatch.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\fixtures\**\*" Link="fixtures\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
