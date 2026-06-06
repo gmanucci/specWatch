@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SpecWatch.Core\SpecWatch.Core.csproj" />
+    <ProjectReference Include="..\..\src\SpecWatch.AzureDevOps\SpecWatch.AzureDevOps.csproj" />
   </ItemGroup>
 
   <ItemGroup>
