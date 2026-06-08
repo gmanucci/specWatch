@@ -1,0 +1,15 @@
+version: 1
+
+apis:
+  - name: payments
+    source:
+      type: url
+      url: https://payments.example.com/openapi.json
+
+    snapshot:
+      path: openapi/payments.openapi.json
+
+    client:
+      language: csharp
+      generator: not-a-real-generator
+      output: src/Clients/Payments

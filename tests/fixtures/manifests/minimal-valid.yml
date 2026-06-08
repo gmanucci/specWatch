@@ -1,0 +1,17 @@
+version: 1
+
+apis:
+  - name: payments
+    source:
+      type: url
+      url: https://payments.example.com/openapi.json
+
+    snapshot:
+      path: openapi/payments.openapi.json
+
+    client:
+      language: csharp
+      generator: kiota
+      output: src/Clients/Payments
+      namespace: Contoso.Clients.Payments
+      className: PaymentsClient

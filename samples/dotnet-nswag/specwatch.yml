@@ -1,0 +1,40 @@
+version: 1
+
+settings:
+  changeDetection:
+    mode: hash
+
+  pullRequest:
+    mode: single
+    branchPrefix: chore/specwatch
+    title: "chore: update generated OpenAPI clients"
+
+  validation:
+    failOnValidationError: true
+
+apis:
+  - name: inventory
+    enabled: true
+
+    source:
+      type: file
+      path: external-specs/inventory.openapi.json
+
+    snapshot:
+      path: openapi/inventory.openapi.json
+
+    client:
+      language: csharp
+      generator: nswag
+      output: src/Clients/Inventory/InventoryClient.cs
+      namespace: Contoso.Clients.Inventory
+      cleanOutput: false
+
+    runtimeAuth:
+      type: api-key-header
+      headerName: X-API-Key
+      valueVariable: INVENTORY_API_KEY
+
+    validation:
+      commands:
+        - dotnet build

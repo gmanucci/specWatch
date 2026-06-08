@@ -1168,7 +1168,7 @@ SpecWatch must:
 
 ## Sprint 0 — Repository Bootstrap
 
-Status: Not Started
+Status: Completed
 
 Goals:
 
@@ -1184,7 +1184,7 @@ Goals:
 
 ## Sprint 1 — Manifest Parsing and Validation
 
-Status: Not Started
+Status: Completed
 
 Goals:
 
@@ -1195,7 +1195,7 @@ Goals:
 
 ## Sprint 2 — OpenAPI Sources and Change Detection
 
-Status: Not Started
+Status: Completed
 
 Goals:
 
@@ -1207,7 +1207,7 @@ Goals:
 
 ## Sprint 3 — Generation Orchestration and Reporting
 
-Status: Not Started
+Status: Completed
 
 Goals:
 
@@ -1218,7 +1218,7 @@ Goals:
 
 ## Sprint 4 — Azure DevOps Integration
 
-Status: Not Started
+Status: Completed
 
 Goals:
 
@@ -1252,3 +1252,87 @@ Each implementation session must append a new entry here, per [Section 5.2](#52-
 - **Remaining / incomplete:** No source code, solution, or projects exist yet. Sprint 0
   (Repository Bootstrap) has not been started.
 - **Suggested next sprint:** Sprint 0 — Repository Bootstrap.
+
+## Session 2 — 2026-06-06 — Sprint 0: Repository Bootstrap
+
+- **Sprint:** Sprint 0 — Repository Bootstrap (Completed).
+- **Implemented:** Created the `SpecWatch.sln` solution and the five projects from
+  the recommended repository structure (Section 6): `src/SpecWatch.Core`,
+  `src/SpecWatch.Cli` (executable assembly name `specwatch`),
+  `src/SpecWatch.AzureDevOps`, `tests/SpecWatch.Core.Tests`, and
+  `tests/SpecWatch.Cli.Tests`. All projects target `net9.0` with nullable
+  reference types and implicit usings enabled. Wired up project references
+  (Cli → Core, AzureDevOps → Core, test projects → their targets) and exposed
+  CLI internals to its test project via `InternalsVisibleTo`. Added a minimal CLI
+  entry point that prints the version (`--version`) and a command summary.
+  Added `README.md`, `LICENSE` (MIT), and a .NET `.gitignore`.
+- **Files changed:** `SpecWatch.sln` (new), `.gitignore` (new), `LICENSE` (new),
+  `README.md` (updated), `src/SpecWatch.Core/SpecWatch.Core.csproj` (new),
+  `src/SpecWatch.Core/AssemblyMarker.cs` (new),
+  `src/SpecWatch.Cli/SpecWatch.Cli.csproj` (new),
+  `src/SpecWatch.Cli/Program.cs` (new),
+  `src/SpecWatch.AzureDevOps/SpecWatch.AzureDevOps.csproj` (new),
+  `src/SpecWatch.AzureDevOps/AssemblyMarker.cs` (new),
+  `tests/SpecWatch.Core.Tests/SpecWatch.Core.Tests.csproj` (new),
+  `tests/SpecWatch.Core.Tests/BootstrapTests.cs` (new),
+  `tests/SpecWatch.Cli.Tests/SpecWatch.Cli.Tests.csproj` (new),
+  `tests/SpecWatch.Cli.Tests/BootstrapTests.cs` (new).
+- **Tests added:** Bootstrap tests in both test projects confirming the solution
+  builds and the test harness runs (`dotnet test` passes: 2 tests, 0 failures).
+- **Build/test commands:** `dotnet build SpecWatch.sln` and
+  `dotnet test SpecWatch.sln` both succeed on the .NET 9 / .NET 10 SDK.
+- **Remaining / incomplete:** No manifest parsing, sources, change detection,
+  generation, reporting, or Azure DevOps logic yet — these begin in Sprint 1.
+  The CLI currently only handles `--version` and a help summary.
+- **Suggested next sprint:** Sprint 1 — Manifest Parsing and Validation.
+
+## Session 3 — 2026-06-06 — Sprints 1–4: Core, Pipeline, and Azure DevOps
+
+- **Sprints:** Sprint 1, Sprint 2, Sprint 3, Sprint 4 (all Completed).
+- **Implemented:**
+  - **Sprint 1 — Manifest Parsing and Validation:** Added YamlDotNet-backed
+    configuration models (`SpecWatch.Core/Configuration`), `ManifestLoader`,
+    `ManifestValidator`/`ManifestValidationResult`, `ExitCodes`, and the
+    `specwatch validate` command. Validation covers required fields, supported
+    generators/languages, and snapshot/output path collisions (exit code `3`).
+  - **Sprint 2 — OpenAPI Sources and Change Detection:** Added `IOpenApiSource`
+    with local-file and HTTP sources, `OpenApiSourceFactory`, secret resolution
+    by environment-variable name (`ISecretResolver`), raw-hash change detection
+    (`HashSpecChangeDetector`), the `SpecWatchRunner.CheckAsync` pipeline, and the
+    `specwatch check` command (exit codes `0`/`2`/`1`/`4`).
+  - **Sprint 3 — Generation Orchestration and Reporting:** Added
+    `ICommandRunner`/`ProcessCommandRunner` (+ `CommandLineParser`), the
+    `IClientGenerator` abstraction with Kiota, NSwag, Refitter, and OpenAPI
+    Generator implementations plus `ClientGeneratorFactory`, snapshot updates, the
+    `SpecWatchRunner.UpdateAsync` pipeline (fetch → detect → write snapshot →
+    generate → run validation → write report), JSON report writing
+    (`ReportWriter`/`UpdateReport`), and the `specwatch update` command.
+  - **Sprint 4 — Azure DevOps Integration:** Implemented `AzureDevOpsOptions`,
+    `AzureDevOpsGitService` (prepare branch, commit, push), and
+    `AzureDevOpsPullRequestService` (single PR for all changes via `az repos pr`,
+    skipping when an active PR exists). Implemented `specwatch init azure-devops`
+    scaffolding (writes `specwatch.yml` + `azure-pipelines.yml`, refuses to
+    overwrite without `--force`). Added `samples/dotnet-kiota` and
+    `samples/dotnet-nswag` with example manifests and pipelines.
+- **Files changed:** New code under `src/SpecWatch.Core/{Configuration,Sources,
+  ChangeDetection,Generation,Execution,Reporting,Pipeline}`, `src/SpecWatch.Core/
+  ExitCodes.cs`, CLI commands under `src/SpecWatch.Cli/Commands`
+  (`Validate`/`Check`/`Update`/`Init` + `InitTemplates`) and `CliApplication`,
+  Azure DevOps services under `src/SpecWatch.AzureDevOps` (replacing the
+  placeholder `AssemblyMarker`), `samples/**`, and tests under
+  `tests/SpecWatch.Core.Tests/**` and `tests/SpecWatch.Cli.Tests/**`.
+- **Tests added:** 73 tests total (63 in Core.Tests, 10 in Cli.Tests) covering
+  manifest load/validation, sources/auth, change detection, generators, the
+  update pipeline (with a fake command runner), report writing, the Azure DevOps
+  git and PR services, and the `validate`/`init` CLI commands. `dotnet test
+  SpecWatch.sln` passes with 0 failures.
+- **Build/test commands:** `dotnet build SpecWatch.sln`, `dotnet test SpecWatch.sln`.
+- **Security:** Secrets are resolved only by environment-variable name and never
+  logged or stored; process execution uses argument lists (no shell) to avoid
+  injection (Sections 5.7 and 19).
+- **Remaining / incomplete:** Change detection is raw-hash only (normalized-hash
+  and semantic diff are future work); generation is C#-only; PR strategy is a
+  single PR for all changes; only Azure DevOps CI is scaffolded. The optional
+  `docs/` set (manifest/generators/auth/azure-devops/roadmap) was not added.
+- **Suggested next sprint:** A "Future Sprints" item — normalized-hash/semantic
+  change detection, or multi-language generation with the compatibility matrix.

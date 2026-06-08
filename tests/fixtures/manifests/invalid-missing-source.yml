@@ -1,0 +1,11 @@
+version: 1
+
+apis:
+  - name: payments
+    snapshot:
+      path: openapi/payments.openapi.json
+
+    client:
+      language: csharp
+      generator: kiota
+      output: src/Clients/Payments
