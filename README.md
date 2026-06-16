@@ -46,6 +46,29 @@ dotnet test SpecWatch.sln
 dotnet run --project src/SpecWatch.Cli -- --version
 ```
 
+## Download prebuilt binaries
+
+Prebuilt, self-contained `specwatch` binaries are produced by the
+[Build and Release Binaries](.github/workflows/release.yml) GitHub Actions
+workflow for Linux, macOS, and Windows (x64 and arm64).
+
+- **Latest release:** download platform archives from the repository's
+  [Releases](../../releases/latest) page. Each release also includes a
+  `SHA256SUMS.txt` file for verification.
+- **Per-commit builds:** every workflow run uploads the binaries as artifacts,
+  downloadable from the run's summary page.
+
+Archive contents:
+
+| Platform              | Archive                               | Binary          |
+|-----------------------|---------------------------------------|-----------------|
+| Linux x64 / arm64     | `specwatch-linux-{x64,arm64}.tar.gz`  | `specwatch`     |
+| macOS x64 / arm64     | `specwatch-osx-{x64,arm64}.tar.gz`    | `specwatch`     |
+| Windows x64 / arm64   | `specwatch-win-{x64,arm64}.zip`       | `specwatch.exe` |
+
+The binaries are self-contained and do not require a .NET SDK or runtime to be
+installed. To cut a release, push a tag matching `v*` (for example, `v0.1.0`).
+
 ## Status
 
 This project is being implemented incrementally through sprints. See the
