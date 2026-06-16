@@ -1360,3 +1360,25 @@ Each implementation session must append a new entry here, per [Section 5.2](#52-
   winget/apt packaging.
 - **Suggested next sprint:** Resume the original "Future Sprints" backlog —
   normalized-hash/semantic change detection or multi-language generation.
+
+## Session 5 — 2026-06-16 — Manual Release Trigger
+
+- **Sprint:** Tooling/CI add-on (outside the original Sprint 0–4 scope).
+- **Implemented:** Extended `.github/workflows/release.yml` so the release job
+  can also be triggered manually via `workflow_dispatch`. Added two inputs to
+  the workflow: `release_tag` (the tag for the GitHub Release; leave empty to
+  skip release creation) and `prerelease` (mark as prerelease). The release
+  job's `if` now permits `workflow_dispatch` runs that supply a non-empty
+  `release_tag`, in addition to existing `v*` tag pushes. A new "Resolve
+  release tag" step picks the tag from `GITHUB_REF` for tag pushes or from
+  `inputs.release_tag` for manual runs, and the "Create GitHub Release" step
+  passes `tag_name`, `name`, and `prerelease` accordingly. This lets
+  maintainers cut a release from already-built artifacts on demand without
+  pushing a tag.
+- **Files changed:** `.github/workflows/release.yml`, `AGENTS.md` (this entry).
+- **Tests added:** None — workflow-only change exercised by GitHub Actions.
+- **Build/test commands:** Unchanged (`dotnet build SpecWatch.sln`,
+  `dotnet test SpecWatch.sln`).
+- **Remaining / incomplete:** Same caveats as Session 4 (no code signing, no
+  curated release notes, no package-manager distribution).
+- **Suggested next sprint:** Resume the original "Future Sprints" backlog.
