@@ -1336,3 +1336,27 @@ Each implementation session must append a new entry here, per [Section 5.2](#52-
   `docs/` set (manifest/generators/auth/azure-devops/roadmap) was not added.
 - **Suggested next sprint:** A "Future Sprints" item — normalized-hash/semantic
   change detection, or multi-language generation with the compatibility matrix.
+
+## Session 4 — 2026-06-16 — Cross-Platform Binary Release Workflow
+
+- **Sprint:** Tooling/CI add-on (outside the original Sprint 0–4 scope).
+- **Implemented:** Added a GitHub Actions workflow
+  (`.github/workflows/release.yml`) that builds the `specwatch` CLI as a
+  self-contained, single-file binary for Linux (x64, arm64), macOS (x64, arm64),
+  and Windows (x64, arm64) using `dotnet publish`. The workflow runs on pushes
+  to `main`, pull requests, version tags (`v*`), and manual dispatch. Each build
+  uploads a per-platform archive (`*.tar.gz` for Unix, `*.zip` for Windows) as a
+  workflow artifact. When triggered by a `v*` tag, a `release` job downloads all
+  artifacts, generates a `SHA256SUMS.txt`, and publishes a GitHub Release with
+  the archives attached. README updated with a "Download prebuilt binaries"
+  section.
+- **Files changed:** `.github/workflows/release.yml` (new), `README.md`
+  (updated), `AGENTS.md` (this entry).
+- **Tests added:** None — workflow-only change exercised by GitHub Actions.
+- **Build/test commands:** Unchanged (`dotnet build SpecWatch.sln`,
+  `dotnet test SpecWatch.sln`).
+- **Remaining / incomplete:** No code-signing/notarization for macOS or Windows
+  binaries; release notes are auto-generated rather than curated; no Homebrew/
+  winget/apt packaging.
+- **Suggested next sprint:** Resume the original "Future Sprints" backlog —
+  normalized-hash/semantic change detection or multi-language generation.
