@@ -8,22 +8,22 @@ settings:
     failOnValidationError: true
 
 apis:
-  - name: payments
+  - name: petstore
     source:
-      type: file
-      path: ../tests/fixtures/specs/payments-v1.openapi.json
+      type: url
+      url: https://petstore3.swagger.io/api/v3/openapi.json
 
     snapshot:
-      path: snapshots/payments.openapi.json
+      path: snapshots/petstore.openapi.json
 
     client:
       language: csharp
       generator: kiota
-      output: ../src/Demo/Payments/Generated
-      namespace: Demo.Payments
-      className: PaymentsClient
+      output: ../src/Demo/Petstore/Generated
+      namespace: Demo.Petstore
+      className: PetstoreClient
       cleanOutput: true
 
     validation:
       commands:
-        - dotnet build ../src/Demo/Payments/Payments.csproj
+        - dotnet build ../src/Demo/Petstore/Petstore.csproj

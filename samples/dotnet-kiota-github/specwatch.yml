@@ -17,29 +17,23 @@ settings:
     failOnValidationError: true
 
 apis:
-  - name: payments
+  - name: petstore
     enabled: true
 
     source:
       type: url
-      url: https://payments.example.com/openapi.json
-      auth:
-        type: bearer
-        tokenVariable: PAYMENTS_OPENAPI_TOKEN
+      url: https://petstore3.swagger.io/api/v3/openapi.json
 
     snapshot:
-      path: openapi/payments.openapi.json
+      path: openapi/petstore.openapi.json
 
     client:
       language: csharp
       generator: kiota
-      output: src/Clients/Payments
-      namespace: Contoso.Clients.Payments
-      className: PaymentsClient
+      output: src/Clients/Petstore/Generated
+      namespace: Contoso.Clients.Petstore
+      className: PetstoreClient
       cleanOutput: true
-      additionalArguments:
-        - "--structured-mime-types"
-        - "application/json"
 
     validation:
       commands:

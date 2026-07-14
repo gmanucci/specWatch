@@ -45,11 +45,11 @@ jobs:
           fi
 
       - name: Pack generated client
-        run: dotnet pack src/Demo/Payments/Payments.csproj -c Release -o ./nupkg
+        run: dotnet pack src/Demo/Petstore/Petstore.csproj -c Release -o ./nupkg
 
       - name: Upload NuGet package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Demo.Payments
+          name: Demo.Petstore
           path: ./nupkg/*.nupkg
           retention-days: 7
