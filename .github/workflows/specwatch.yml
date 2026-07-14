@@ -7,7 +7,9 @@ on:
     paths:
       - "src/**"
       - "samples/**"
+      - "tests/fixtures/**"
       - ".github/specwatch-demo.yml"
+      - ".github/workflows/specwatch.yml"
 
 jobs:
   demo:
@@ -23,29 +25,31 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
+      - name: Install Kiota
+        run: dotnet tool install -g Microsoft.OpenApi.Kiota
+
       - name: Build specwatch
         run: dotnet publish src/SpecWatch.Cli/SpecWatch.Cli.csproj -c Release -o ./publish --self-contained false
 
       - name: Validate sample manifest
         run: ./publish/specwatch validate --manifest samples/dotnet-kiota-github/specwatch.yml
 
-      - name: Check for changes (local spec)
-        run: |
-          set +e
-          ./publish/specwatch check --manifest .github/specwatch-demo.yml
-          exit_code=$?
-          set -e
-
-          if [ $exit_code -eq 2 ]; then
-            echo "Changes detected (no snapshot committed — expected on first run)."
-            exit 0
-          fi
-
-          exit $exit_code
+      - name: Run specwatch update (generate client + build)
+        run: ./publish/specwatch update --manifest .github/specwatch-demo.yml
 
       - name: Show report
         if: always()
         run: |
-          if [ -f specwatch-report.json ]; then
-            cat specwatch-report.json
+          if [ -f .github/specwatch-report.json ]; then
+            cat .github/specwatch-report.json
           fi
+
+      - name: Pack generated client
+        run: dotnet pack src/Demo/Payments/Payments.csproj -c Release -o ./nupkg --no-build
+
+      - name: Upload NuGet package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Demo.Payments
+          path: ./nupkg/*.nupkg
+          retention-days: 7

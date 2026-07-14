@@ -4,6 +4,9 @@ settings:
   changeDetection:
     mode: hash
 
+  validation:
+    failOnValidationError: true
+
 apis:
   - name: payments
     source:
@@ -11,11 +14,16 @@ apis:
       path: ../tests/fixtures/specs/payments-v1.openapi.json
 
     snapshot:
-      path: .github/snapshots/payments.openapi.json
+      path: snapshots/payments.openapi.json
 
     client:
       language: csharp
       generator: kiota
-      output: src/Demo/Payments
+      output: ../src/Demo/Payments
       namespace: Demo.Payments
       className: PaymentsClient
+      cleanOutput: true
+
+    validation:
+      commands:
+        - dotnet build ../src/Demo/Payments/Payments.csproj
