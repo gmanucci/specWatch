@@ -8,7 +8,7 @@ apis:
   - name: payments
     source:
       type: file
-      path: tests/fixtures/specs/payments-v1.openapi.json
+      path: ../tests/fixtures/specs/payments-v1.openapi.json
 
     snapshot:
       path: .github/snapshots/payments.openapi.json

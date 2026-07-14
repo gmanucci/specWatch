@@ -1407,3 +1407,26 @@ Each implementation session must append a new entry here, per [Section 5.2](#52-
   yet; that would be a natural follow-up to match `specwatch init azure-devops`.
 - **Suggested next sprint:** Implement `specwatch init github-actions` scaffolding,
   or normalized-hash/semantic change detection.
+
+## Session 7 — 2026-07-14 — Fix Demo run workflow path resolution
+
+- **Sprint:** Future Sprints — Additional CI targets (GitHub Actions).
+- **Implemented:** Investigated failed GitHub Actions run `29296042007` (job
+  `86969659072`) and fixed the demo manifest path resolution issue. The
+  `.github/specwatch-demo.yml` manifest was loaded from `.github/`, but its
+  local file source path was written as if it were rooted at the repository
+  root. Updated `source.path` to use a manifest-relative path
+  (`../tests/fixtures/specs/payments-v1.openapi.json`) so `specwatch check`
+  can resolve the fixture correctly in CI. Added a focused CLI test to assert
+  the demo manifest resolves successfully and returns `ChangesDetected` instead
+  of source-fetch failure.
+- **Files changed:** `.github/specwatch-demo.yml`,
+  `tests/SpecWatch.Cli.Tests/DemoManifestTests.cs`, `AGENTS.md` (this entry).
+- **Tests added:** `DemoManifestTests.Check_DemoManifest_UsesManifestRelativeSourcePath`.
+- **Build/test commands:** `dotnet build SpecWatch.sln`,
+  `dotnet test tests/SpecWatch.Cli.Tests/SpecWatch.Cli.Tests.csproj`,
+  `dotnet test SpecWatch.sln`.
+- **Remaining / incomplete:** `specwatch init github-actions` scaffolding is
+  still not implemented.
+- **Suggested next sprint:** Implement `specwatch init github-actions`
+  scaffolding, or normalized-hash/semantic change detection.
