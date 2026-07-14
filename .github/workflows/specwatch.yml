@@ -45,7 +45,7 @@ jobs:
           fi
 
       - name: Pack generated client
-        run: dotnet pack src/Demo/Payments/Payments.csproj -c Release -o ./nupkg --no-build
+        run: dotnet pack src/Demo/Payments/Payments.csproj -c Release -o ./nupkg
 
       - name: Upload NuGet package artifact
         uses: actions/upload-artifact@v4
