@@ -1,0 +1,92 @@
+name: SpecWatch
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  specwatch:
+    name: Update OpenAPI clients
+    runs-on: ubuntu-latest
+
+    env:
+      TARGET_BRANCH: main
+      UPDATE_BRANCH: chore/specwatch/openapi-clients
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Configure Git
+        run: |
+          git config user.email "specwatch-bot@users.noreply.github.com"
+          git config user.name "SpecWatch Bot"
+
+      - name: Prepare update branch
+        run: |
+          git fetch origin $TARGET_BRANCH
+          git checkout -B $UPDATE_BRANCH origin/$TARGET_BRANCH
+
+      - name: Run SpecWatch
+        run: specwatch update --manifest specwatch.yml
+        env:
+          PAYMENTS_OPENAPI_TOKEN: ${{ secrets.PAYMENTS_OPENAPI_TOKEN }}
+
+      - name: Commit and push changes
+        id: commit
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes detected."
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Changes detected."
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+
+          git status --short
+          git add .
+          git commit -m "chore: update generated OpenAPI clients"
+          git push origin HEAD:refs/heads/$UPDATE_BRANCH --force-with-lease
+
+      - name: Create pull request
+        if: steps.commit.outputs.has_changes == 'true'
+        run: |
+          existing_pr=$(gh pr list \
+            --head "$UPDATE_BRANCH" \
+            --base "$TARGET_BRANCH" \
+            --state open \
+            --json number \
+            --jq '.[0].number')
+
+          if [ -n "$existing_pr" ]; then
+            echo "An active SpecWatch PR already exists: $existing_pr"
+            exit 0
+          fi
+
+          gh pr create \
+            --head "$UPDATE_BRANCH" \
+            --base "$TARGET_BRANCH" \
+            --title "chore: update generated OpenAPI clients" \
+            --body "SpecWatch detected OpenAPI changes and regenerated API clients." \
+            --label "dependencies" \
+            --label "openapi" \
+            --label "generated-client"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

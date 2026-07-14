@@ -1,0 +1,21 @@
+version: 1
+
+settings:
+  changeDetection:
+    mode: hash
+
+apis:
+  - name: payments
+    source:
+      type: file
+      path: tests/fixtures/specs/payments-v1.openapi.json
+
+    snapshot:
+      path: .github/snapshots/payments.openapi.json
+
+    client:
+      language: csharp
+      generator: kiota
+      output: src/Demo/Payments
+      namespace: Demo.Payments
+      className: PaymentsClient

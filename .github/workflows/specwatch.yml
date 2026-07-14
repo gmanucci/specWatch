@@ -1,0 +1,51 @@
+name: SpecWatch
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "samples/**"
+      - ".github/specwatch-demo.yml"
+
+jobs:
+  demo:
+    name: Demo run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build specwatch
+        run: dotnet publish src/SpecWatch.Cli/SpecWatch.Cli.csproj -c Release -o ./publish --self-contained false
+
+      - name: Validate sample manifest
+        run: ./publish/specwatch validate --manifest samples/dotnet-kiota-github/specwatch.yml
+
+      - name: Check for changes (local spec)
+        run: |
+          set +e
+          ./publish/specwatch check --manifest .github/specwatch-demo.yml
+          exit_code=$?
+          set -e
+
+          if [ $exit_code -eq 2 ]; then
+            echo "Changes detected (no snapshot committed — expected on first run)."
+            exit 0
+          fi
+
+          exit $exit_code
+
+      - name: Show report
+        if: always()
+        run: |
+          if [ -f specwatch-report.json ]; then
+            cat specwatch-report.json
+          fi

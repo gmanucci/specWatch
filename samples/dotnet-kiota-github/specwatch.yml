@@ -1,0 +1,47 @@
+version: 1
+
+settings:
+  changeDetection:
+    mode: hash
+
+  pullRequest:
+    mode: single
+    branchPrefix: chore/specwatch
+    title: "chore: update generated OpenAPI clients"
+    labels:
+      - dependencies
+      - openapi
+      - generated-client
+
+  validation:
+    failOnValidationError: true
+
+apis:
+  - name: payments
+    enabled: true
+
+    source:
+      type: url
+      url: https://payments.example.com/openapi.json
+      auth:
+        type: bearer
+        tokenVariable: PAYMENTS_OPENAPI_TOKEN
+
+    snapshot:
+      path: openapi/payments.openapi.json
+
+    client:
+      language: csharp
+      generator: kiota
+      output: src/Clients/Payments
+      namespace: Contoso.Clients.Payments
+      className: PaymentsClient
+      cleanOutput: true
+      additionalArguments:
+        - "--structured-mime-types"
+        - "application/json"
+
+    validation:
+      commands:
+        - dotnet build
+        - dotnet test

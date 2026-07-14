@@ -1382,3 +1382,28 @@ Each implementation session must append a new entry here, per [Section 5.2](#52-
 - **Remaining / incomplete:** Same caveats as Session 4 (no code signing, no
   curated release notes, no package-manager distribution).
 - **Suggested next sprint:** Resume the original "Future Sprints" backlog.
+
+## Session 6 — 2026-07-13 — GitHub Actions sample and demo workflow
+
+- **Sprint:** Future Sprints — Additional CI targets (GitHub Actions).
+- **Implemented:** Added a `samples/dotnet-kiota-github/` sample demonstrating
+  SpecWatch running on GitHub Actions. Includes a `specwatch.yml` manifest
+  (Kiota/C# with bearer auth, mirrors the existing `dotnet-kiota` sample) and
+  a `samples/dotnet-kiota-github/.github/workflows/specwatch.yml` template
+  (daily schedule + `workflow_dispatch`, `gh pr create/list`, `$GITHUB_OUTPUT`).
+  Added a live demo workflow at `.github/workflows/specwatch.yml` that builds
+  specwatch from source and runs `specwatch validate` + `specwatch check` against
+  local test fixtures (no external URLs or generators required). Added
+  `.github/specwatch-demo.yml` as the demo manifest. Also cleaned up leftover
+  test-run artifacts that had been committed under `src/SpecWatch.Cli/`.
+- **Files changed:**
+  `samples/dotnet-kiota-github/specwatch.yml` (new),
+  `samples/dotnet-kiota-github/.github/workflows/specwatch.yml` (new),
+  `.github/workflows/specwatch.yml` (new),
+  `.github/specwatch-demo.yml` (new),
+  `AGENTS.md` (this entry).
+- **Tests added:** None (workflow/sample change only).
+- **Remaining / incomplete:** No `specwatch init github-actions` CLI scaffolding
+  yet; that would be a natural follow-up to match `specwatch init azure-devops`.
+- **Suggested next sprint:** Implement `specwatch init github-actions` scaffolding,
+  or normalized-hash/semantic change detection.
