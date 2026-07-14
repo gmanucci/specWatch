@@ -19,7 +19,7 @@ apis:
     client:
       language: csharp
       generator: kiota
-      output: ../src/Demo/Payments
+      output: ../src/Demo/Payments/Generated
       namespace: Demo.Payments
       className: PaymentsClient
       cleanOutput: true
